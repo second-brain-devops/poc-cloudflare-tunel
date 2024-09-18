@@ -1,0 +1,18 @@
+services:
+  # cloudflare tunnel
+  tunnel:
+    image: cloudflare/cloudflared
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      - "TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}"
+    network_mode: "service:reverse-proxy"
+  reverse-proxy:
+    image: nginx:alpine
+    volumes:
+      - ./conf.d:/etc/nginx/conf.d
+    ports:
+      - 80:80
+  main:
+    image: kennethreitz/httpbin
+    restart: unless-stopped
